@@ -1,4 +1,9 @@
+%Set alpha to be variable
 syms a
+% derivative of the growth rate functions and set gradient to 0 to find max
+% r1 - 2*r1*x/K1 − 2αy=0
+% r2 - 2*r2*y/k2 - 2αx=0
+%Plugin value below except α we have the following:
 A = [2*a 2*0.05/150000; 2*0.08/400000 2*a];
 b = [0.05; 0.08];
 s = A\b
