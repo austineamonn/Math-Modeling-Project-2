@@ -1,0 +1,93 @@
+syms x y
+
+% trying to visually answer the question about petitioning to raise quotas
+blue_percent_negotiated = 15 ; 
+fin_percent_negotiated = 15;
+
+n = 25 ; % number of iterations/years predicted over
+
+% parameters, as provided in the instructions
+    r_1 = 0.05 ;
+    r_2 = 0.08 ;
+    k_1 = 150000 ;
+    k_2 = 400000 ;
+    a_1 = 10.^(-8) ;
+    a_2 = 10.^(-8) ;
+
+% initialize arrays to store results
+    blue_pop = zeros(1,n) ; 
+    fin_pop = zeros(1,n) ;
+    tot_pop = zeros(1,n) ;
+    blue_price = zeros(1,n) ;
+    fin_price = zeros(1,n) ;
+    tot_price = zeros(1,n) ;
+
+% original whale population levels
+blue_whale_population = 70619 ;
+fin_whale_population = 194703 ;
+
+for t = 1:n
+
+    % whale general growth functions, as provided
+    dx_dt = (r_1.*x.*(1-(x./k_1)) - a_1.*x.*y) ;
+    dy_dt = (r_2.*y.*(1-(y./k_2)) - a_2.*x.*y) ;
+
+    % populations within restrictions at which whalers get the maximum
+    % profits
+    x_max_profit = 75000.*(1+(blue_percent_negotiated./100)) ;
+    y__max_profit = 200000.*(1+(fin_percent_negotiated./100)) ;
+
+    % calculate the actual numerical values for dx_dt and dy_dt 
+    % based on the current population levels
+    dx_dt = subs(dx_dt, [x,y], [blue_whale_population, fin_whale_population]) ;
+    dy_dt = subs(dy_dt, [x,y], [blue_whale_population, fin_whale_population]) ;
+
+    % the whalers would probably want to kill the number of whales that would let
+    % them reach the whale population levels that will provide them with
+    % the maximum profit next year, within the bounds of quotas
+    % the whaler's profit this iteration
+    blues_killed = dx_dt + (blue_whale_population - x_max_profit);
+    price_blues = 12000.*blues_killed;
+    blue_price(t) = price_blues ;
+    
+    fins_killed = dy_dt + (fin_whale_population - y__max_profit);
+    price_fins = 6000.*fins_killed;
+    fin_price(t) = price_fins ;
+    
+    total_yearly_price = price_blues + price_fins ;
+    tot_price(t) = total_yearly_price ;
+
+    % the whale populations at the start of this iteration
+    blue_pop(t) = blue_whale_population ;
+    fin_pop(t) = fin_whale_population ;
+    tot_pop(t) = blue_pop(t) + fin_pop(t) ;
+
+    % possibly starting the next iteration with a different population level
+    blue_whale_population = blue_whale_population - blues_killed +  dx_dt;
+    fin_whale_population = fin_whale_population - fins_killed + dy_dt ;
+
+end
+
+figure
+
+subplot(2,1,1)
+plot(1:n, blue_pop, '-o', 'DisplayName', 'blue whale population') ;
+hold on
+plot(1:n, fin_pop, '-o', 'DisplayName', 'fin whale population') ;
+plot(1:n, tot_pop, '-o', 'DisplayName', 'total whale population') ;
+hold off
+xlabel('Time');
+ylabel('Population');
+title('Whale Population Over Time')
+legend;
+
+subplot(2,1,2)
+plot(1:n, blue_price, '-o', 'DisplayName', 'blue whaler income') ;
+hold on
+plot(1:n, fin_price, '-o', 'DisplayName', 'fin whaler income') ;
+plot(1:n, tot_price, '-o', 'DisplayName', 'total whaler income') ;
+hold off
+xlabel('Time');
+ylabel('Income');
+title('Whaler Income Over Time')
+legend;
