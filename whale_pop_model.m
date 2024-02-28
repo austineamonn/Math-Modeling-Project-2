@@ -1,4 +1,4 @@
-function [pop,growth,profit]=whale_pop_model(r1,r2,k1,k2,a1,a2,pop1,pop2,years,type)
+function [totalpop,bluepop,finpop,bluegrowth,fingrowth,annprofit,totalprofit]=whale_pop_model(r1,r2,k1,k2,a1,a2,pop1,pop2,years,type)
 
 %1 is blue whales, 2 is fin whales
 %output:current total whale population, current total whale growth rate,
@@ -14,51 +14,70 @@ if nargin<1
     pop1=75000;
     pop2=200000;
     years=15;
-    type=0;
+    type=1;
 end
 
-profit=0; %initialize profit
+%initialize all the output vectors
+
+totalpop=zeros(1,years+1);
+bluepop=zeros(1,years+1);
+finpop=zeros(1,years+1);
+bluegrowth=zeros(1,years+1);
+fingrowth=zeros(1,years+1);
+annprofit=zeros(1,years+1);
+
+%add initial values to their respective vectors
+
+totalpop(1,1)=pop1+pop2;
+bluepop(1,1)=pop1;
+finpop(1,1)=pop2;
+
+%get initial growth and add to growth vectors
 
 growthinit1=whale_growth(pop1,pop2,r1,k1,a1);
+bluegrowth(1,1)=growthinit1;
 growthinit2=whale_growth(pop1,pop2,r2,k2,a2);
+fingrowth(1,1)=growthinit2;
 
+%use type and initial growth to determine hunting level
+%type is the hunting level relative to the growth rate
+%ex: type=1.05 is hunting at 105% of the growth rate
 
-for i=1:years
+hunt1=type*growthinit1;
+hunt2=type*growthinit2;
+
+%calculate profit
+
+profit1=profit(hunt1,12000,pop1);
+profit2=profit(hunt2,6000,pop2);
+annprofit(1,1)=profit1+profit2;
+
+totalprofit=annprofit(1,1); %initialize total profit
+
+%calculate new population for year 1
+
+pop1=newpop(pop1,growthinit1,hunt1);
+pop2=newpop(pop2,growthinit2,hunt2);
+
+%iterate for year 1 to year 'years'
+
+for i=2:years+1
+    %calculate annual growth
     growth1=whale_growth(pop1,pop2,r1,k1,a1);
     growth2=whale_growth(pop1,pop2,r2,k2,a2);
-    if type==0 %hunting is same rate as growth
-        hunt1=growthinit1;
-        hunt2=growthinit2;
-    elseif type==1 %hunting is 75% of growth
-        hunt1=0.75*growthinit1;
-        hunt2=0.75*growthinit2;
-    elseif type==2 %hunting is 105% of growth
-        hunt1=1.05*growthinit1;
-        hunt2=1.05*growthinit2;
-    elseif type==3 %hunting is 110% of growth
-        hunt1=1.1*growthinit1;
-        hunt2=1.1*growthinit2;
-    elseif type==4 %hunting is 115% of growth
-        hunt1=1.15*growthinit1;
-        hunt2=1.15*growthinit2;
-    elseif type==5 %hunting is 120% of growth
-        hunt1=1.2*growthinit1;
-        hunt2=1.2*growth2;
-    elseif type==6 %hunting is 125% of growth
-        hunt1=1.25*growthinit1;
-        hunt2=1.25*growthinit2;
-
-    end
-    pop1=pop1+growth1-hunt1;
-    pop2=pop2+growth2-hunt2;
-    profit1=hunt1*12000;
-    profit2=hunt2*6000;
-    profit=profit1+profit2+profit;
+    %update all the output vectors
+    bluegrowth(1,i)=growth1;
+    fingrowth(1,i)=growth2;
+    pop1=newpop(pop1,growth1,hunt1);
+    bluepop(1,i)=pop1;
+    pop2=newpop(pop2,growth2,hunt2);
+    finpop(1,i)=pop2;
+    totalpop(1,i)=pop1+pop2;
+    profit1=profit(hunt1,12000,pop1);
+    profit2=profit(hunt2,6000,pop2);
+    combprofit=profit1+profit2;
+    annprofit(1,i)=combprofit;
+    totalprofit=totalprofit+combprofit;
 end
-
-pop=pop1+pop2;
-growth=growth1+growth2;
-
-%comp=(r1/k1)*(r2/k2)-a1*a2;
 
 
