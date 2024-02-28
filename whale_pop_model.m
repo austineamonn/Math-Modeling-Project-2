@@ -17,6 +17,10 @@ if nargin<1
     type=1;
 end
 
+%ideal pop based on IWC rules
+ideal1=k1/2;
+ideal2=k2/2;
+
 %initialize all the output vectors
 
 totalpop=zeros(1,years+1);
@@ -35,16 +39,18 @@ annprofit=zeros(1,years+1);
 %get initial growth and add to growth vectors
 
 growth1=whale_growth(pop1,pop2,r1,k1,a1);
+initalg1=growth1;
 %bluegrowth(1,1)=growthinit1;
-growth2=whale_growth(pop2,pop1,r2,k2,a2);
+growth2=whale_growth(pop1,pop2,r2,k2,a2);
 %fingrowth(1,1)=growthinit2;
+initalg2=growth2;
 
 %use type and initial growth to determine hunting level
 %type is the hunting level relative to the growth rate
 %ex: type=1.05 is hunting at 105% of the growth rate
 
-hunt1=type*growth1
-hunt2=type*growth2
+hunt1=type*growth1;
+hunt2=type*growth2;
 
 %calculate profit
 
@@ -67,6 +73,12 @@ for i=1:years+1
     pop1=newpop(pop1,growth1,hunt1,i-1);
     bluepop(1,i)=pop1;
     pop2=newpop(pop2,growth2,hunt2,i-1);
+    if pop1>=ideal1
+        hunt1=initalg1;
+    end
+    if pop2>=ideal2
+        hunt1=initalg2;
+    end
     finpop(1,i)=pop2;
     totalpop(1,i)=pop1+pop2;
     %calculate annual growth
