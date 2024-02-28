@@ -10,11 +10,13 @@ r1=0.05;
 r2=0.08;
 k1=150000;
 k2=400000;
-a1=10^(-8);
-a2=10^(-8);
+%a1=10^(-8);
+a1=0.00000001;
+a2=0.00000001;
+%a2=10^(-8);
 pop1=4800; %75000; %4,800
 pop2=43000; %400000; %43000
-type=0.95;
+type=1; %quota=growth rate   %0.9775076555 leads to no extinction; %0.9775076556 leads to death of blue whales
 
 %run whale population model, ignore total profit since no need to graph it
 [totalpop,bluepop,finpop,bluegrowth,fingrowth,profit,~]=whale_pop_model(r1,r2,k1,k2,a1,a2,pop1,pop2,years,type);
