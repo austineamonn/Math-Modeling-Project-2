@@ -36,7 +36,7 @@ annprofit=zeros(1,years+1);
 
 growth1=whale_growth(pop1,pop2,r1,k1,a1);
 %bluegrowth(1,1)=growthinit1;
-growth2=whale_growth(pop1,pop2,r2,k2,a2);
+growth2=whale_growth(pop2,pop1,r2,k2,a2);
 %fingrowth(1,1)=growthinit2;
 
 %use type and initial growth to determine hunting level
