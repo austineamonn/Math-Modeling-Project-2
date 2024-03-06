@@ -5,26 +5,23 @@ if nargin<1
     graphtype=0; %assume graphing population
 end
 
-%inital assumptions for values
+%Inital assumptions for values
+%Use values given by IWC
 r1=0.05;
 r2=0.08;
 k1=150000;
 k2=400000;
-%a1=10^(-8);
 a1=0.00000001;
 a2=0.00000001;
-%a2=10^(-8);
-pop1=4800; %75000; %4,800
-pop2=43000; %400000; %43000
-type=1; %quota=growth rate   %0.9775076555 leads to no extinction; %0.9775076556 leads to death of blue whales
+pop1=4800; %IWC current blue whale population
+pop2=43000; %IWC current fin whale population
+type=1; %This is the scenario where the quota is equal to the growth rate
 
-%run whale population model, ignore total profit since no need to graph it
+%run whale population model, ignore total profit since it is just one value.
 [totalpop,bluepop,finpop,bluegrowth,fingrowth,profit,~]=whale_pop_model(r1,r2,k1,k2,a1,a2,pop1,pop2,years,type);
-
 
 %initialize time vector
 time=0:years;
-
 
 if graphtype==0
     %graph time vs total population, blue whale population, and fin whale
@@ -36,6 +33,6 @@ elseif graphtype==1
 elseif graphtype==2
     %graph time vs profit
     plot(time,profit,"--ob")
-else
+else %error if no type is entered
     error('try entering a 0,1 or 2')
 end
