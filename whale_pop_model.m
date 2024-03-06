@@ -4,7 +4,8 @@ function [totalpop,bluepop,finpop,bluegrowth,fingrowth,annprofit,totalprofit]=wh
 %output:current total whale population, current total whale growth rate,
 %total whaler profit
 
-if nargin<1
+if nargin<1 %if no input assume these values
+    %IWC assumed values
     r1=0.05;
     r2=0.08;
     k1=150000;
@@ -14,6 +15,7 @@ if nargin<1
     pop1=75000;
     pop2=200000;
     years=15;
+    %scenario where hunting levels are equal to growth rate
     type=1;
 end
 
@@ -30,19 +32,11 @@ bluegrowth=zeros(1,years+1);
 fingrowth=zeros(1,years+1);
 annprofit=zeros(1,years+1);
 
-%add initial values to their respective vectors
-
-%totalpop(1,1)=pop1+pop2;
-%bluepop(1,1)=pop1;
-%finpop(1,1)=pop2;
-
 %get initial growth and add to growth vectors
 
 growth1=whale_growth(pop1,pop2,r1,k1,a1);
 initalg1=growth1;
-%bluegrowth(1,1)=growthinit1;
 growth2=whale_growth(pop1,pop2,r2,k2,a2);
-%fingrowth(1,1)=growthinit2;
 initalg2=growth2;
 
 %use type and initial growth to determine hunting level
@@ -52,35 +46,24 @@ initalg2=growth2;
 hunt1=type*growth1;
 hunt2=type*growth2;
 
-%calculate profit
-
-%profit1=profit(hunt1,12000,pop1);
-%profit2=profit(hunt2,6000,pop2);
-%annprofit(1,1)=profit1+profit2;
-
-%totalprofit=annprofit(1,1); %initialize total profit
+%initialize total profit
 totalprofit=0;
 
-%calculate new population for year 1
-
-%pop1=newpop(pop1,growthinit1,hunt1);
-%pop2=newpop(pop2,growthinit2,hunt2);
-
-%iterate for year 1 to year 'years'
-
+%simulate whale populations for 'years' many years
 for i=1:years+1
     %calculate current population
     pop1=newpop(pop1,growth1,hunt1,i-1);
     bluepop(1,i)=pop1;
     pop2=newpop(pop2,growth2,hunt2,i-1);
+    finpop(1,i)=pop2;
+    totalpop(1,i)=pop1+pop2;
+    %when populatinons get above IWC ideal levels, return hunting to initial growth levels
     if pop1>=ideal1
         hunt1=initalg1;
     end
     if pop2>=ideal2
         hunt1=initalg2;
     end
-    finpop(1,i)=pop2;
-    totalpop(1,i)=pop1+pop2;
     %calculate annual growth
     growth1=whale_growth(pop1,pop2,r1,k1,a1);
     growth2=whale_growth(pop2,pop1,r2,k2,a2);
