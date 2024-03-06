@@ -57,16 +57,16 @@ for i=1:years+1
     pop2=newpop(pop2,growth2,hunt2,i-1);
     finpop(1,i)=pop2;
     totalpop(1,i)=pop1+pop2;
-    %when populatinons get above IWC ideal levels, return hunting to initial growth levels
-    if pop1>=ideal1
-        hunt1=initalg1;
-    end
-    if pop2>=ideal2
-        hunt1=initalg2;
-    end
     %calculate annual growth
     growth1=whale_growth(pop1,pop2,r1,k1,a1);
     growth2=whale_growth(pop2,pop1,r2,k2,a2);
+    %when populatinons get above IWC ideal levels, remove quotas, so hunting is equal to population growth
+    if pop1>=growth1
+        hunt1=initalg1;
+    end
+    if pop2>=growth2
+        hunt1=initalg2;
+    end
     %update all the output vectors
     bluegrowth(1,i)=growth1;
     fingrowth(1,i)=growth2;
